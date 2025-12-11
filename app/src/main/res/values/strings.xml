@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">BasicArchitecture</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="birthday">Birthday</string>
+    <string name="next">Next</string>
+    <string name="empty_field">The field \"%s\" is empty.</string>
+    <string name="invalid_age">You are under 18 years old.</string>
+    <string name="invalid_birthday">The birthday is entered incorrectly</string>
+    <string name="country">Сountry</string>
+    <string name="city">City</string>
+    <string name="address">Address</string>
+    <string name="birth_date">Date of birth</string>
+    <string name="interests">Interests</string>
 </resources>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".FragmentResult">
+
+    <TextView
+        android:layout_marginTop="140dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="@string/name"
+        android:textColor="@color/gray_dark"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        tools:text="Ivan"
+        android:textColor="@color/black"
+        android:layout_marginTop="13dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="@string/surname"
+        android:textColor="@color/gray_dark"
+        android:layout_marginTop="17dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:id="@+id/textViewSurname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        tools:text="Ivanov"
+        android:textColor="@color/black"
+        android:layout_marginTop="13dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="@string/birth_date"
+        android:textColor="@color/gray_dark"
+        android:layout_marginTop="17dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:id="@+id/textViewBirthday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        tools:text="07.11.1977"
+        android:textColor="@color/black"
+        android:layout_marginTop="13dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="@string/address"
+        android:textColor="@color/gray_dark"
+        android:layout_marginTop="17dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:id="@+id/textViewAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        tools:text="Moscow, Shabolovskaya, 1"
+        android:textColor="@color/black"
+        android:layout_marginTop="13dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:text="@string/interests"
+        android:textColor="@color/gray_dark"
+        android:layout_marginTop="17dp"
+        android:layout_marginHorizontal="18dp"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:layout_marginHorizontal="18dp"
+        android:id="@+id/chipGroupInterests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
