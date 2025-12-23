@@ -10,12 +10,3 @@ import javax.inject.Singleton
 @HiltAndroidApp
 class MyApp: Application() {
 }
-
-@Module
-@InstallIn(SingletonComponent::class)
-
-object AppModule {
-    @Provides
-    @Singleton
-    fun userInfo() = WizardCache()
-}
