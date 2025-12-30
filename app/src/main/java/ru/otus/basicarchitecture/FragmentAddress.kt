@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import kotlin.getValue
 import ru.otus.basicarchitecture.databinding.FragmentAddressBinding
 import dagger.hilt.android.AndroidEntryPoint
+import android.widget.ArrayAdapter
 
 @AndroidEntryPoint
 class FragmentAddress : Fragment() {
@@ -19,6 +21,13 @@ class FragmentAddress : Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentAddressBinding == null")
 
     private val viewModel: AddressViewModel by viewModels()
+    private val adapter by lazy {
+        ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            mutableListOf<String>()
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +35,27 @@ class FragmentAddress : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.addressInput.setAdapter(adapter)
         observeViewModel()
         addTextChangedListeners()
         binding.buttonNext.setOnClickListener {
             viewModel.validateData()
+        }
+
+        binding.addressInput.setOnItemClickListener {  _, _, position, _ ->
+            val selectedItem = binding.addressInput.adapter.getItem(position) as? UserAddress
+                ?: return@setOnItemClickListener
+            selectedItem.let {
+                val address = listOf(
+                    it.country,
+                    it.city,
+                    it.street,
+                    it.house,
+                    it.block
+                ).filter { !it.isBlank() }
+                    .joinToString(", ")
+                binding.addressInput.setText(address)
+            }
         }
     }
 
@@ -42,42 +68,40 @@ class FragmentAddress : Fragment() {
     }
 
     fun observeViewModel(){
-        viewModel.errorEmptyCountry.observe(viewLifecycleOwner) {
-
-            with(binding) {
-                if (it){
-                    editTextCountry.error = String.format(
-                        resources.getString(R.string.empty_field),
-                        textInputCountry.hint.toString()
-                    )
-                } else {
-                    editTextCountry.error = null
-                }
-            }
-        }
-
-        viewModel.errorEmptyCity.observe(viewLifecycleOwner) {
-            with(binding) {
-                if (it){
-                    editTextCity.error = String.format(resources.getString(R.string.empty_field),
-                        textInputCity.hint.toString()
-                    )
-                } else {
-                    editTextCity.error = null
-                }
+        viewModel.errorNetwork.observe(viewLifecycleOwner) {
+            if (it) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.error_network),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         viewModel.errorEmptyAddress.observe(viewLifecycleOwner) {
             with(binding) {
                 if (it){
-                    editTextAddress.error = String.format(resources.getString(R.string.empty_field),
-                        textInputAddress.hint.toString()
+                    addressInput.error = String.format(resources.getString(R.string.empty_field),
+                        addressInput.hint.toString()
                     )
                 } else {
-                    editTextAddress.error = null
+                    addressInput.error = null
                 }
             }
+        }
+
+        viewModel.listUserAddress.observe(viewLifecycleOwner) { listUserAddress ->
+            adapter.clear()
+            adapter.addAll(listUserAddress.map {
+                listOf(
+                    it.country,
+                    it.city,
+                    it.street,
+                    it.house,
+                    it.block
+                ).filter { !it.isBlank() }
+                    .joinToString(", ")
+            })
         }
 
         viewModel.canContinue.observe(viewLifecycleOwner) {
@@ -91,53 +115,25 @@ class FragmentAddress : Fragment() {
 
     private fun addTextChangedListeners(){
         with(binding){
-            editTextCountry.addTextChangedListener(object : TextWatcher{
-                override fun beforeTextChanged( s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int) { }
-
-                override fun onTextChanged(s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int) {
-                    viewModel.setCountry(editTextCountry.text.toString())
-                }
-
-                override fun afterTextChanged(s: Editable?) { }
-            })
-
-            editTextCity.addTextChangedListener(object : TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?,
+            addressInput.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
                     start: Int,
                     count: Int,
                     after: Int
-                ) { }
+                ) {}
 
-                override fun onTextChanged(s: CharSequence?,
+                override fun onTextChanged(
+                    s: CharSequence?,
                     start: Int,
                     before: Int,
-                    count: Int) {
-                    viewModel.setCity(editTextCity.text.toString())
+                    count: Int
+                ) {
+                    val address = addressInput.text.toString()
+                    viewModel.setAddress(address)
+                    viewModel.searchAddress(address)
                 }
-
-                override fun afterTextChanged(s: Editable?) { }
-            })
-
-            editTextAddress.addTextChangedListener(object : TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int) { }
-
-                override fun onTextChanged(s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int) {
-                    viewModel.setAddress(editTextAddress.text.toString())
-                }
-
-                override fun afterTextChanged(s: Editable?) { }
+               override fun afterTextChanged(s: Editable?) {}
             })
         }
     }

@@ -4,28 +4,31 @@ package ru.otus.basicarchitecture
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddressViewModel @Inject constructor(
-    private val wizardCache: WizardCache
+    private val wizardCache: WizardCache,
+    private val addressSuggestUseCase: AddressSuggestUseCase
 ): ViewModel() {
+    private var _listUserAddress = MutableLiveData<List<UserAddress>>()
+    val listUserAddress: LiveData<List<UserAddress>>
+        get() = _listUserAddress
     private var _canContinue = MutableLiveData<Boolean>(false)
     val canContinue: LiveData<Boolean>
         get() = _canContinue
-    private var _errorEmptyCity = MutableLiveData<Boolean>()
-    val errorEmptyCity: LiveData<Boolean>
-        get() = _errorEmptyCity
-    private var _errorEmptyCountry = MutableLiveData<Boolean>()
-    val errorEmptyCountry: LiveData<Boolean>
-        get() = _errorEmptyCountry
+    private var _errorNetwork = MutableLiveData<Boolean>()
+    val errorNetwork: LiveData<Boolean>
+        get() = _errorNetwork
     private var _errorEmptyAddress = MutableLiveData<Boolean>()
     val errorEmptyAddress: LiveData<Boolean>
         get() = _errorEmptyAddress
 
     fun validateData() {
-        var successful = checkEmptyFields()
+        val successful = checkEmptyFields()
 
         if (successful == false){
             _canContinue.value = false
@@ -34,36 +37,24 @@ class AddressViewModel @Inject constructor(
         _canContinue.value = true
     }
 
-    fun setCountry(country: String) {
-        wizardCache.userAddress.country = country
+    fun setAddress(fullAddress: String) {
+        wizardCache.userAddress.fullAddress = fullAddress
     }
 
-    fun setCity(city: String) {
-        wizardCache.userAddress.city = city
-    }
-
-    fun setAddress(address: String) {
-        wizardCache.userAddress.address = address
+    fun searchAddress(query: String) {
+        viewModelScope.launch {
+            try {
+                val result = addressSuggestUseCase.invoke(query)
+                _listUserAddress.postValue(result)
+            } catch (e: Exception) {
+                _errorNetwork.postValue(true)
+            }
+        }
     }
 
     private fun checkEmptyFields(): Boolean{
         var successful = true
-
-        if (wizardCache.userAddress.country == ""){
-            _errorEmptyCountry.value = true
-            successful = false
-        } else{
-            _errorEmptyCountry.value = false
-        }
-
-        if (wizardCache.userAddress.city == ""){
-            _errorEmptyCity.value = true
-            successful = false
-        } else {
-            _errorEmptyCity.value = false
-        }
-
-        if (wizardCache.userAddress.address == ""){
+        if (wizardCache.userAddress.fullAddress == ""){
             _errorEmptyAddress.value = true
             successful = false
         } else{

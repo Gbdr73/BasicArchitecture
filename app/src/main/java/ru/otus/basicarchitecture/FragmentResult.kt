@@ -47,7 +47,7 @@ class FragmentResult : Fragment() {
                 textViewAddress.text = String.format("%s, %s, %s",
                     it.country,
                     it.city,
-                    it.address
+                    it.fullAddress
                 )
             }
         }
@@ -66,6 +66,10 @@ class FragmentResult : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     companion object {
         fun newInstance() = FragmentResult()
     }
