@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +28,8 @@ class AddressViewModel @Inject constructor(
     val errorEmptyAddress: LiveData<Boolean>
         get() = _errorEmptyAddress
 
+    private var current_job: Job? = null
+
     fun validateData() {
         val successful = checkEmptyFields()
 
@@ -42,7 +45,9 @@ class AddressViewModel @Inject constructor(
     }
 
     fun searchAddress(query: String) {
-        viewModelScope.launch {
+        current_job?.cancel()
+
+        current_job = viewModelScope.launch {
             try {
                 val result = addressSuggestUseCase.invoke(query)
                 _listUserAddress.postValue(result)
@@ -54,7 +59,7 @@ class AddressViewModel @Inject constructor(
 
     private fun checkEmptyFields(): Boolean{
         var successful = true
-        if (wizardCache.userAddress.fullAddress == ""){
+        if (wizardCache.userAddress.fullAddress.isBlank()){
             _errorEmptyAddress.value = true
             successful = false
         } else{

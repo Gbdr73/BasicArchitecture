@@ -1,6 +1,7 @@
 package ru.otus.basicarchitecture
 
 import android.util.Log
+import java.io.IOException
 import javax.inject.Inject
 
 class AddressRepositoryImpl @Inject constructor(
@@ -14,6 +15,7 @@ class AddressRepositoryImpl @Inject constructor(
         if (!response.isSuccessful){
             val errorResponse = response.errorBody()?.string()
             Log.e("API Error", "Error response: $errorResponse")
+            throw IOException("Error response: $errorResponse")
         }
 
         val listAddressDataDto = response.body()?.suggestions?.map { suggestion ->
